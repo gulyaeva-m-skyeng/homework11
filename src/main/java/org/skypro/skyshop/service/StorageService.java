@@ -25,15 +25,15 @@ public class StorageService {
         loadTestData();
     }
 
-    public Collection<Product> getAllProducts() {
-        return products.values();
+    public List<Product> getAllProducts() {
+        return new ArrayList<>(products.values());
     }
 
-    public Collection<Article> getAllArticles() {
-        return articles.values();
+    public List<Article> getAllArticles() {
+            return new ArrayList<>(articles.values());
     }
 
-    public Collection<Searchable> getAllSearchable() {
+    public List<Searchable> getAllSearchable() {
         List<Searchable> all = new ArrayList<>();
         all.addAll(products.values());
         all.addAll(articles.values());

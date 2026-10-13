@@ -13,8 +13,8 @@ public class SimpleProduct extends Product {
         public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SimpleProduct)) return false;
-        SimpleProduct that = (SimpleProduct) o;
-        return Objects.equals(getId(), that.getId());
+        Product product = (Product) o;
+        return Objects.equals(getId(), product.getId());
     }
 
     @Override

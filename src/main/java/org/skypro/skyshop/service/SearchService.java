@@ -1,11 +1,10 @@
 package org.skypro.skyshop.service;
 
-import org.skypro.skyshop.dto.SearchResult;
-import org.skypro.skyshop.model.search.Searchable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.skypro.skyshop.model.search.SearchResult;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +23,11 @@ public class SearchService {
         String lowerPattern = pattern.toLowerCase();
 
         return storageService.getAllSearchable().stream()
+                .filter(Objects::nonNull)
                 .filter(s -> s.getSearchTerm() != null && s.getSearchTerm().toLowerCase().contains(lowerPattern))
+                .distinct()
                 .map(SearchResult::fromSearchable)
-                .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

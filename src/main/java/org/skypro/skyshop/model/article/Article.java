@@ -17,6 +17,19 @@ public class Article implements Searchable {
     }
 
     @Override
+    @JsonIgnore
+    public String getSearchTerm() {
+        String term = title + " " + content;
+        return term != null ? term.toLowerCase() : "";
+    }
+
+    @Override
+    @JsonIgnore
+    public String getContentType() {
+        return "article";
+    }
+
+    @Override
     public UUID getId() {
         return id;
     }
@@ -32,9 +45,15 @@ public class Article implements Searchable {
     }
 
     @Override
-    @JsonIgnore
-    public String getSearchTerm() {
-        String combined = title + " " + content;
-        return combined.toLowerCase();
+    public boolean equals (Object o){
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Article article = (Article) o;
+        return getId().equals(article.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }
