@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping
 public class ShopController {
 
     private final SearchService searchService;
