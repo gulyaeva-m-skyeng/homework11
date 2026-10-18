@@ -2,10 +2,10 @@ package org.skypro.skyshop.service;
 
 import org.springframework.stereotype.Service;
 import org.skypro.skyshop.model.search.SearchResult;
+import org.skypro.skyshop.model.search.Searchable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class SearchService {
@@ -24,7 +24,6 @@ public class SearchService {
 
         return storageService.getAllSearchable().stream()
                 .filter(Objects::nonNull)
-                .filter(s -> s.getSearchTerm() != null && s.getSearchTerm().toLowerCase().contains(lowerPattern))
                 .distinct()
                 .map(SearchResult::fromSearchable)
                 .filter(Objects::nonNull)

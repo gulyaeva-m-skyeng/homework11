@@ -1,22 +1,26 @@
 package org.skypro.skyshop.model.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.Objects;
+import org.skypro.skyshop.model.article.Article;
+import org.skypro.skyshop.model.product.Product;
+import org.skypro.skyshop.model.search.Searchable;
 
+import java.util.UUID;
+import java.util.Objects;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SearchResult {
-    private final String id;
+    private final UUID id;
     private final String name;
     private final String contentType;
 
-    public SearchResult(String id, String name, String contentType) {
+    public SearchResult(UUID id, String name, String contentType) {
         this.id = id;
         this.name = name;
         this.contentType = contentType;
     }
 
-    public String getId()  {
+    public UUID getId()  {
         return id;
     }
 
@@ -32,12 +36,25 @@ public class SearchResult {
         if (searchable == null) {
             return null;
         }
-        return new SearchResult(
-                searchable.getId().toString(),
-                searchable.getName(),
-                searchable.getContentType()
-        );
+        UUID id = searchable.getId();
+            String name;
+            String contentType;
+
+            if (searchable instanceof Product p) {
+                name = p.getName();
+                contentType = "product";
+
+            } else if (searchable instanceof Article a) {
+                name = a.getName();
+                contentType = "article";
+            } else {
+                name = "Unknown item";
+                contentType = "unknown";
+            }
+
+        return new SearchResult(id, name, contentType);
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -60,4 +77,3 @@ public class SearchResult {
                 '}';
     }
 }
-

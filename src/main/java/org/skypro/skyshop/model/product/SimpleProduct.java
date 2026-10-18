@@ -10,11 +10,16 @@ public class SimpleProduct extends Product {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public int getPrice() {
+        return super.getPrice();
+    }
+
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SimpleProduct)) return false;
+        if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return Objects.equals(getId(), product.getId());
+        return getId() != null && getId().equals(product.getId());
     }
 
     @Override

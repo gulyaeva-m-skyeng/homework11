@@ -9,16 +9,11 @@ public class FixPriceProduct extends Product {
     }
 
     @Override
-    public int getPrice() {
-        return super.getPrice();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return Objects.equals(getId(), product.getId());
+        return getId() != null && getId().equals(product.getId());
     }
 
     @Override
