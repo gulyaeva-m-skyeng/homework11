@@ -1,5 +1,6 @@
 package org.skypro.skyshop.service;
 
+import org.skypro.skyshop.exception.NoSuchProductException;
 import org.skypro.skyshop.model.article.Article;
 import org.skypro.skyshop.model.product.DiscountedProduct;
 import org.skypro.skyshop.model.product.FixPriceProduct;
@@ -8,6 +9,7 @@ import org.skypro.skyshop.model.product.SimpleProduct;
 import org.skypro.skyshop.model.search.Searchable;
 
 import org.springframework.stereotype.Service;
+import org.skypro.skyshop.service.StorageService;
 import java.util.concurrent.ConcurrentHashMap;
 
 import java.util.*;
@@ -72,6 +74,17 @@ public class StorageService {
 
     public List<Article> getAllArticles() {
         return new ArrayList<>(articles.values());
+    }
+
+    public Product getProductByIdOrFail(UUID id) {
+        if (id == null) {
+            throw new NoSuchProductException("Product ID cannot be null");
+        }
+        Product product = products.get(id);
+        if (product == null) {
+            throw new NoSuchProductException("Product with id " + id + " not found");
+        }
+        return product;
     }
 
     public Optional<Product> getProductById(UUID id) {

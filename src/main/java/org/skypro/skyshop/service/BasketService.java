@@ -1,56 +1,81 @@
 package org.skypro.skyshop.service;
 
+import org.skypro.skyshop.exception.NoSuchProductException;
 import org.skypro.skyshop.model.basket.BasketItem;
-import org.skypro.skyshop.model.basket.ProductBasket;
 import org.skypro.skyshop.model.basket.UserBasket;
 import org.skypro.skyshop.model.product.Product;
 import org.skypro.skyshop.service.StorageService;
 
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
+@SessionScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BasketService {
 
-    private final ProductBasket productBasket;
+    private final Map<UUID, Integer> items = new ConcurrentHashMap<>();
     private final StorageService storageService;
 
-    public BasketService(ProductBasket productBasket, StorageService storageService) {
-        this.productBasket = productBasket;
+    public BasketService(StorageService storageService) {
         this.storageService = storageService;
     }
 
     public void addProductToBasket(UUID id) {
         if (id == null) {
-            throw new IllegalArgumentException("Product id cannot be null");
+            throw new NoSuchProductException("Product ID cannot be null");
         }
+
         Optional<Product> productOpt = storageService.getProductById(id);
         Product product = productOpt.orElseThrow(
-                () -> new IllegalArgumentException("Product with id " + id + " not found")
+                () -> new NoSuchProductException("Product with id " + id + " not found")
         );
-
-        productBasket.addProduct(id);
+        items.merge(id, 1, Integer::sum);
     }
+
     public UserBasket getUserBasket() {
-        List<BasketItem> items = productBasket.getItems().entrySet().stream()
-                .filter(entry -> entry.getValue() > 0)
+        List<BasketItem> basketItems = items.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
                 .map(entry -> {
                     UUID id = entry.getKey();
                     int quantity = entry.getValue();
 
-                    Product product = storageService.getProductById(id)
-                            .orElseThrow(() -> new IllegalStateException(
-                                    "Product with id " + id + " disappeared from storage while in basket"
-                            ));
+                    Optional<Product> opt = storageService.getProductById(id);
+                    if (opt.isEmpty()) {
+                        return null;
+                    }
 
+                    Product product = opt.get();
                     return new BasketItem(product, quantity);
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-
-        return new UserBasket(items);
+        return new UserBasket(basketItems);
+    }
+    public void clear() {
+        items.clear();
+    }
+    public void removeProduct(UUID id) {
+        items.remove(id);
+    }
+    public void setProductQuantity(UUID id, int quantity) {
+        if (quantity <= 0) {
+            items.remove(id);
+            return;
+        }
+        items.put(id, quantity);
+    }
+    public int getTotalItemsCount() {
+        return items.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 }
