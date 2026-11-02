@@ -33,7 +33,7 @@ public class StorageService {
 
         Product discounted = new DiscountedProduct(
                 UUID.randomUUID(),
-                "Подводка со скидкой",
+                "Тушь со скидкой",
                 200,
                 20.0
         );
