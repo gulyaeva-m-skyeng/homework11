@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @SessionScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ProductBasket {
-
     private final Map<UUID, Integer> items = new ConcurrentHashMap<>();
 
     public void addProduct(UUID id) {
@@ -25,5 +24,15 @@ public class ProductBasket {
 
     public Map<UUID, Integer> getItems() {
         return Collections.unmodifiableMap(new HashMap<>(items));
+    }
+
+    public void clear() {
+        items.clear();
+    }
+
+    public void removeProduct(UUID id) {
+        if (id != null) {
+            items.remove(id);
+        }
     }
 }
