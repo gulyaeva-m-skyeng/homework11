@@ -79,6 +79,7 @@ class BasketServiceTest {
         var userBasket = basketService.getUserBasket();
 
         assertThat(userBasket.getItems()).isEmpty();
+        assertThat(userBasket.getTotalPrice()).isZero();
 
         verify(productBasket, times(1)).getItems();
     }
@@ -93,14 +94,16 @@ class BasketServiceTest {
         when(storageService.getProductById(eq(id2))).thenReturn(Optional.of(product2));
 
         Map<UUID, Integer> basketContents = Map.of(
-                blushId, 1,
-                id2, 1
+                blushId, 2,
+                id2, 4
         );
         when(productBasket.getItems()).thenReturn(basketContents);
 
         var userBasket = basketService.getUserBasket();
 
         assertThat(userBasket.getItems()).hasSize(2);
+        assertThat(userBasket.getTotalPrice()).isEqualTo(3400);
+        assertThat(userBasket.getCountItems()).isEqualTo(6);
 
         var names = userBasket.getItems().stream()
                 .map(BasketItem::getName)
